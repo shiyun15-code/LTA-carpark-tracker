@@ -32,7 +32,7 @@ export function getStoredBackendConfig(): BackendConfig {
   }
   return {
     backendMode: 'simulation',
-    customApiUrl: '/api/v1/carparks',
+    customApiUrl: '/api/carparkavailability',
     refreshIntervalSeconds: 30,
     lastSyncTime: null,
     status: 'idle',
@@ -200,6 +200,13 @@ export async function fetchLiveCarparksFromBackend(
     }
 
     const payload = await response.json();
+
+    if (payload && payload.keyConfigured === false) {
+      return {
+        success: false,
+        error: payload.message || 'LTA DataMall AccountKey is not configured. Please set LTA_DATAMALL_API_KEY.',
+      };
+    }
 
     // Check if payload is in LTA DataMall format
     if (payload && Array.isArray(payload.value)) {

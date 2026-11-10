@@ -168,7 +168,7 @@ export const BackendConnectionModal: React.FC<BackendConnectionModalProps> = ({
                     type="text"
                     value={apiUrl}
                     onChange={(e) => setApiUrl(e.target.value)}
-                    placeholder="https://your-api.com/api/carparks or /api/v1/carparks"
+                    placeholder="/api/carparkavailability or https://..."
                     className="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 font-mono text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <button
@@ -182,7 +182,28 @@ export const BackendConnectionModal: React.FC<BackendConnectionModalProps> = ({
                     ) : (
                       <Plug className="w-3.5 h-3.5" />
                     )}
-                    <span>Test</span>
+                    <span>Test Carpark API</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setTestStatus('testing');
+                      try {
+                        const r = await fetch('/api/health');
+                        const h = await r.json();
+                        setTestStatus('success');
+                        setTestMessage(
+                          `Health OK! Uptime: ${h.uptimeSeconds}s · LTA Key Configured: ${h.environment.ltaKeyConfigured ? 'Yes (Active)' : 'No (Key pending)'}`
+                        );
+                      } catch (err: any) {
+                        setTestStatus('error');
+                        setTestMessage(`Health check failed: ${err.message}`);
+                      }
+                    }}
+                    className="px-2.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-lg transition-colors cursor-pointer shrink-0"
+                    title="Check /api/health"
+                  >
+                    Check Health
                   </button>
                 </div>
               </div>
